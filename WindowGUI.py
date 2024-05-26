@@ -146,9 +146,89 @@ class MainWindow(Tk):
 class AdminMenu(Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.geometry(parent.center_window(350,350))
+        self.title('Welcome, admin1')
+        self.geometry(parent.center_window(190,130))
         self.protocol('WM_DELETE_WINDOW', lambda: self.close_admin_menu(parent))
+        self.create_widgets(parent)
+        self.place_widgets()
         self.mainloop()
+
+    def create_widgets(self, parent):
+        self.frame_1 = Frame(self)
+        self.set_bt = Button(self.frame_1, text = '   Set book  ')
+        self.display_bt = Button(self.frame_1, text = 'Display data')
+        self.update_bt = Button(self.frame_1, text = 'Update data')
+        self.delete_bt = Button(self.frame_1, text = 'Delete data')
+
+        self.set_bt.bind('<Button-1>', lambda event :self.set_data_window(event, parent))
+        self.display_bt.bind('<Button-1>', self.display_data_window)
+        self.update_bt.bind('<Button-1>', self.update_data_window) 
+        self.delete_bt.bind('<Button-1>', self.delete_data_window) 
+    
+    def place_widgets(self):
+        self.set_bt.grid(row = 0, column = 0)
+        self.display_bt.grid(row = 0, column = 1)
+        self.update_bt.grid(row = 1, column = 0) 
+        self.delete_bt.grid(row = 1, column = 1)
+        self.frame_1.pack(pady = 10, anchor = 'center', expand = True)
+
+    def set_data_window(self, event, parent):
+        self.withdraw()
+        self.set_window = Toplevel(self)
+        self.set_window.geometry(parent.center_window(300,440))
+        self.set_data_widgets()
+        self.place_set_data_widgets()
+        self.set_window.protocol('WM_DELETE_WINDOW', lambda: self.close_set_window(parent))
+
+    def set_data_widgets(self):
+        self.folder_l = Label(self.set_window, text = 'Folder')
+        self.folder_entry = Entry(self.set_window)
+        self.category_l = Label(self.set_window, text = 'Category')
+        self.category_entry = Entry(self.set_window)
+        self.title_l = Label(self.set_window, text = 'Title')
+        self.title_entry = Entry(self.set_window)
+        self.ISBN_l = Label(self.set_window, text = 'ISBN')
+        self.ISBN_entry = Entry(self.set_window)
+        self.author_l = Label(self.set_window, text = 'Author')
+        self.author_entry = Entry(self.set_window)
+        self.price_l = Label(self.set_window, text = 'Price')
+        self.price_entry = Entry(self.set_window)
+
+        self.frame_2 = Frame(self.set_window)
+        self.summit_bt = Button(self.frame_2, text = 'Summit')
+        self.msg_l = Label(self.frame_2, text= '')
+    
+    def display_data_window(self, event):
+        pass
+
+    def update_data_window(self, event):
+        pass
+
+    def delete_data_window(self, event):
+        pass 
+
+    def place_set_data_widgets(self):
+        self.folder_l.pack(pady = 5)
+        self.folder_entry.pack(pady = 5)
+        self.category_l.pack(pady = 5) 
+        self.category_entry.pack(pady = 5)
+        self.title_l.pack(pady = 5)
+        self.title_entry.pack(pady = 5) 
+        self.ISBN_l.pack(pady = 5) 
+        self.ISBN_entry.pack(pady = 5) 
+        self.author_l.pack(pady = 5) 
+        self.author_entry.pack(pady = 5)
+        self.price_l.pack(pady = 5)
+        self.price_entry.pack(pady = 5)
+
+        self.summit_bt.grid(row = 0, column = 0, padx = 15)
+        self.msg_l.grid(row = 0, column = 1, padx = 15)
+        self.frame_2.pack(pady = 20)
+
+    def close_set_window(self, parent):
+        self.set_window.destroy()
+        self.destroy()
+        parent.destroy()
 
     def close_admin_menu(self, parent):
         self.destroy()
@@ -159,7 +239,6 @@ class CustomerMenu(Toplevel):
         super().__init__(parent)
         self.geometry(parent.center_window(350,350))
         self.mainloop()
-
 
 if __name__ == '__main__':
     MainWindow()
