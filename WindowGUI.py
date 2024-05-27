@@ -123,9 +123,6 @@ class MainWindow(Tk):
         self.sign_up_msg2.config(text = result_sign_up)
 
     def pressed_sign_in(self, event):
-        self.sign_in_window.withdraw()
-        AdminMenu(self)
-        '''
         m = Main()
         result_sign_in = m.signin(self.user_name_entry.get(), self.pass_word_entry.get())
         if result_sign_in == 'Invalid username or password' or result_sign_in == 'Error':
@@ -137,7 +134,6 @@ class MainWindow(Tk):
             else:
                 self.sign_in_window.withdraw()
                 CustomerMenu(self)
-        '''
 
     def sign_up_pressed_back(self, event):
         self.sign_up_window.withdraw()
