@@ -14,13 +14,13 @@ class ManageDatabase:
         self.key = key
     
     def get_key(self):
-        return str("'"+self.key+"'")
+        return str(self.key)
     
     def set_value(self, value):
         self.value = value
     
     def get_value(self):
-        return str("'"+self.value+"'")
+        return str(self.value)
     
     def set_title(self, title):
         self.title = title
@@ -46,23 +46,14 @@ class ManageDatabase:
     def get_price(self):
         return str("'"+self.price+"'")
 
-    def set_book(self):
-        print('Set Book Menu')
-        folder_input = input('Enter folder name to set data:')
-        child_input = input('Enter category name:  ')
-        
-        title_input = input('Title : ')
-        ISBN_input = input('ISBN : ')
-        author_input = input('Author : ')
-        price_input = input('Price : ')
-
-        self.set_title(title_input)
-        self.set_ISBN(ISBN_input)
-        self.set_author(author_input)
-        self.set_price(price_input)
+    def set_book(self, folder, category, title, ISBN, author, price):
+        self.set_title(title)
+        self.set_ISBN(ISBN)
+        self.set_author(author)
+        self.set_price(price)
         try:
-            ref  = db.reference(folder_input)
-            users_ref = ref.child(child_input)
+            ref  = db.reference(folder)
+            users_ref = ref.child(category)
             users_ref.set({
                 self.get_title() : {
                     'ISBN' : self.get_ISBN(),
@@ -70,41 +61,37 @@ class ManageDatabase:
                     'price' : self.get_price()
                 }
             })
+            return 'Done'
         except:
-            print('Error')
+            return('Error')
 
-    def get_data(self):
-        print('Load Book Menu')
+    def get_data(self, path):
         try:
-            path_input = input('Enter path to load data:')
-            ref  = db.reference(path_input)
-            return (ref.get())
+            ref  = db.reference(path)
+            return ('Data',ref.get())
+        # return csv file
         except:
             return 'Error'
 
-    def update_data(self):
-        print('Update Book Menu')
-        child_input = input('Enter folder name:  ')
-        path_input = input('Enter path to update data:')
-        update_input = input('update data to:')
+    def update_data(self, path, key, change):
         try:
-            self.set_value(path_input)
-            users_ref = self.ref.child(child_input)
+            users_ref = self.ref.child(path)
+            self.set_key(key)
+            self.set_value(change)
             users_ref.update({
-                self.get_value() : f'{update_input}'
+                self.get_key() : self.get_value()
             })
+            return 'Done'
         except:
-            print('Error')
+            return 'Error'
     
-    def delete_data(self):
-        print('Delete Book Menu')
-        path_input = input('Enter path name :  ')
+    def delete_data(self, path):
         try:
-            hopper_ref = self.ref.child(path_input)
+            hopper_ref = self.ref.child(path)
             hopper_ref.delete()
-            return f'Deleted data in {self.ref}/{hopper_ref}'
+            return f'Deleted data in {path}'
         except:
-            print('Error')
+            return 'Error'
 
 class Main:
 
@@ -138,59 +125,6 @@ class Main:
             return 'Done'
         except:
             return 'Error'
-
-    def show_menu(self):
-        print('Menu'.center(14, '-'))
-        print('1.Set data')
-        print('2.Display data')
-        print('3.Update data')
-        print('4.Delete data')
-        print('5.Open menu')
-        print('6.Exit')
-
-    def menu(self):
-        self.show_menu()
-        while True:
-            my_input = input('Select : ')
-            data = ManageDatabase()
-            if my_input == '6':
-                break
-            elif my_input == '1':
-                data.set_book()
-            elif my_input == '2':
-                print(data.get_data())
-            elif my_input == '3':
-                print(data.update_data())
-            elif my_input == '4':
-                print(data.delete_data())
-            elif my_input == '5':
-                self.show_menu()
-                continue
-            else: 
-                print('Try again')
-            print('Done'+'\nPress 5 to open menu')
-
-    def run_main(self):
-        print('Welcome'.center(26, '-'))
-        print('1.Sign in')
-        print('2.Sign up')
-        while True:
-            select_input = input('Select : ')
-            if select_input == '1':
-                result = self.signin()
-                if result == 'Banned' or result == 'Error':
-                    print(result)
-                    break
-                else:
-                    print(result)
-                    self.menu()
-                    break
-            elif select_input == '2':
-                self.signup()
-                self.run_main()
-                break
-            else:
-                print('Try again')
 
 class Cart:
     pass
