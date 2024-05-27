@@ -76,7 +76,7 @@ class ManageDatabase:
     def get_data(self):
         print('Load Book Menu')
         try:
-            path_input = input('Enter path(s) to load data:')
+            path_input = input('Enter path to load data:')
             ref  = db.reference(path_input)
             return (ref.get())
         except:
@@ -85,7 +85,7 @@ class ManageDatabase:
     def update_data(self):
         print('Update Book Menu')
         child_input = input('Enter folder name:  ')
-        path_input = input('Enter path(s) to update data:')
+        path_input = input('Enter path to update data:')
         update_input = input('update data to:')
         try:
             self.set_value(path_input)
@@ -98,7 +98,7 @@ class ManageDatabase:
     
     def delete_data(self):
         print('Delete Book Menu')
-        path_input = input('Enter path(s) name :  ')
+        path_input = input('Enter path name :  ')
         try:
             hopper_ref = self.ref.child(path_input)
             hopper_ref.delete()
