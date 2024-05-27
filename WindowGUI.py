@@ -88,7 +88,7 @@ class MainWindow(Tk):
         self.sign_in_msg = Label(self.sign_in_frame, text = '')
         self.sign_in_bt.bind('<Button-1>', self.pressed_sign_in)
         self.back_bt.bind('<Button-1>', self.sign_in_pressed_back)
-        self.m = Main()
+        
 
     def place_sign_up_widgets(self):
         self.user_name_label2.pack(pady = 10)
@@ -125,17 +125,19 @@ class MainWindow(Tk):
     def pressed_sign_in(self, event):
         self.sign_in_window.withdraw()
         AdminMenu(self)
-        
-        # result_sign_in = self.m.signin(self.user_name_entry.get(), self.pass_word_entry.get())
-        # if result_sign_in == 'Invalid username or password' or result_sign_in == 'Error':
-        #     self.sign_in_msg.config(text = result_sign_in)
-        # elif result_sign_in == 'Done':
-        #     if self.user_name_entry.get() == 'admin1' and self.pass_word_entry.get() == 'bookstore2024':
-        #         self.sign_in_window.withdraw()
-        #         AdminMenu(self)
-        #     else:
-        #         self.sign_in_window.withdraw()
-        #         CustomerMenu(self)
+        '''
+        m = Main()
+        result_sign_in = m.signin(self.user_name_entry.get(), self.pass_word_entry.get())
+        if result_sign_in == 'Invalid username or password' or result_sign_in == 'Error':
+            self.sign_in_msg.config(text = result_sign_in)
+        elif result_sign_in == 'Done':
+            if self.user_name_entry.get() == 'admin1' and self.pass_word_entry.get() == 'bookstore2024':
+                self.sign_in_window.withdraw()
+                AdminMenu(self)
+            else:
+                self.sign_in_window.withdraw()
+                CustomerMenu(self)
+        '''
 
     def sign_up_pressed_back(self, event):
         self.sign_up_window.withdraw()
@@ -172,7 +174,7 @@ class AdminMenu(Toplevel):
 
         self.set_bt.bind('<Button-1>', lambda event: self.set_data_window(event, parent))
         self.display_bt.bind('<Button-1>', lambda event: self.display_data_window(event, parent))
-        self.update_bt.bind('<Button-1>', lambda event :self.update_data_window(event, parent)) 
+        self.update_bt.bind('<Button-1>', lambda event :self.update_data_window(event, parent))
         self.delete_bt.bind('<Button-1>', lambda event :self.delete_data_window(event, parent)) 
     
     def place_widgets(self):
@@ -237,22 +239,24 @@ class AdminMenu(Toplevel):
         self.back_bt2 = Button(self.frame_2, text = 'Back')
         self.msg_l2 = Label(self.frame_2, text= '')
         self.back_bt2.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.set_window))
-    
+        self.summit_bt2.bind('<Button-1>', self.pressed_set_book)
+   
     def display_data_widgets(self):
         self.path_display_l = Label(self.display_window, text = 'Path')
-        self.path__display_entry = Entry(self.display_window, width = 45)
+        self.path_display_entry = Entry(self.display_window, width = 45)
 
         self.frame_3 = Frame(self.display_window)
         self.summit_bt3 = Button(self.frame_3, text = 'Summit')
         self.back_bt3 = Button(self.frame_3, text = 'Back')
         self.msg_l3 = Label(self.frame_3, text = '')
         self.back_bt3.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.display_window))
-
+        self.summit_bt3.bind('<Button-1>', self.pressed_display_data)
+    
     def update_data_widgets(self):
-        self.folder_l = Label(self.update_window, text = 'Folder')
-        self.folder_entry = Entry(self.update_window)
         self.path_l = Label(self.update_window, text = 'Path')
         self.path_entry = Entry(self.update_window)
+        self.key_l = Label(self.update_window, text = 'Key')
+        self.key_entry = Entry(self.update_window)
         self.change_l = Label(self.update_window, text = 'Change to')
         self.change_entry = Entry(self.update_window)
 
@@ -261,16 +265,18 @@ class AdminMenu(Toplevel):
         self.back_bt4 = Button(self.frame_4, text = 'Back')
         self.msg_l4 = Label(self.frame_4, text = '')
         self.back_bt4.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.update_window))
+        self.summit_bt4.bind('<Button-1>', self.pressed_update_data)
 
     def delete_data_widgets(self):
-        self.path_l = Label(self.delete_window, text = 'Path')
-        self.path_entry = Entry(self.delete_window, width = 45)
+        self.path_l2 = Label(self.delete_window, text = 'Path')
+        self.path_entry2 = Entry(self.delete_window, width = 45)
         
         self.frame_5 = Frame(self.delete_window)
         self.summit_bt5 = Button(self.frame_5, text = 'Summit')
         self.back_bt5 = Button(self.frame_5, text = 'Back')
         self.msg_l5 = Label(self.frame_5, text = '')
         self.back_bt5.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.delete_window))
+        self.summit_bt5.bind('<Button-1>', self.pressed_delete_data)
 
     def place_set_data_widgets(self):
         self.folder_l.pack(pady = 5)
@@ -293,17 +299,17 @@ class AdminMenu(Toplevel):
         
     def place_display_data_widgets(self):
         self.path_display_l.pack(pady = 15)
-        self.path__display_entry.pack(pady = 15)
+        self.path_display_entry.pack(pady = 15)
         self.frame_3.pack(pady = 15)
         self.summit_bt3.grid(row = 0, column = 0, padx =10)
         self.back_bt3.grid(row = 0, column = 1)
         self.msg_l3.grid(row = 1, columnspan = 2, pady = 5)
 
     def place_update_data_widgets(self):
-        self.folder_l.pack(pady = 10)
-        self.folder_entry.pack(pady = 10)
         self.path_l.pack(pady = 10)
         self.path_entry.pack(pady = 10)
+        self.key_l.pack(pady = 10)
+        self.key_entry.pack(pady = 10)
         self.change_l.pack(pady = 10)
         self.change_entry.pack(pady = 10)
         self.frame_4.pack(pady = 15)
@@ -312,8 +318,8 @@ class AdminMenu(Toplevel):
         self.msg_l4.grid(row = 1, columnspan = 2,pady = 5)
 
     def place_delete_data_widgets(self):
-        self.path_l.pack(pady = 10)
-        self.path_entry.pack(pady = 10)
+        self.path_l2.pack(pady = 10)
+        self.path_entry2.pack(pady = 10)
         self.frame_5.pack(pady = 15)
         self.summit_bt5.grid(row = 0, column = 0, padx = 10)
         self.back_bt5.grid(row = 0, column = 1)
@@ -346,6 +352,26 @@ class AdminMenu(Toplevel):
     def pressed_back_bt(self, event, window):
         window.withdraw()
         self.deiconify()
+
+    def pressed_set_book(self, event):
+        md = ManageDatabase()
+        result = md.set_book(self.folder_entry.get(), self.category_entry.get(), self.title_entry.get(), self.ISBN_entry.get(), self.author_entry.get(), self.price_entry.get())
+        self.msg_l2.config(text = result)
+
+    def pressed_display_data(self, event):
+        md = ManageDatabase()
+        result = md.get_data(self.path_display_entry.get())
+        self.msg_l3.config(text = result)
+
+    def pressed_update_data(self, event):
+        md = ManageDatabase()
+        result = md.update_data(self.path_entry.get(), self.key_entry.get(), self.change_entry.get())
+        self.msg_l4.config(text = result)
+
+    def pressed_delete_data(self, event):
+        md = ManageDatabase()
+        result = md.delete_data(self.path_entry2.get())
+        self.msg_l5.config(text = result)
 
 class CustomerMenu(Toplevel):
     def __init__(self, parent):
