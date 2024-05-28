@@ -32,19 +32,19 @@ class ManageDatabase:
         self.ISBN = ISBN
     
     def get_ISBN(self):
-        return str("'"+self.ISBN+"'")
+        return str(self.ISBN)
     
     def set_author(self, author):
         self.author = author
     
     def get_author(self):
-        return str("'"+self.author+"'")
+        return str(self.author)
     
     def set_price(self, price):
         self.price = price
     
     def get_price(self):
-        return str("'"+self.price+"'")
+        return str(self.price)
 
     def set_book(self, folder, category, title, ISBN, author, price):
         self.set_title(title)
@@ -99,7 +99,6 @@ class Main:
         self.ref  = db.reference('users')
 
     def signup(self, username, pass_word, birthday, email, fullname): 
-        print('Signup Menu')
         user_name_input = username
         pass_word_input = pass_word
         birth_day_input = birthday
@@ -108,10 +107,10 @@ class Main:
 
         users_ref = self.ref.child(user_name_input)
         users_ref.update({
-            'Birthday' : birth_day_input,
-            'Email' : email_input.lower(),
-            'Fullname' : full_name_input,
-            'Password' : pass_word_input
+            'birthday' : birth_day_input,
+            'email' : email_input.lower(),
+            'fullname' : full_name_input,
+            'password' : pass_word_input
         })
         return 'Done'
 
@@ -119,7 +118,7 @@ class Main:
         self.user_name_input = username
         self.pass_word_input = pass_word 
         try:
-            self.pass_word_users = self.ref.child(f'{self.user_name_input}/Password')
+            self.pass_word_users = self.ref.child(f'{self.user_name_input}/password')
             while not self.user_name_input in self.ref.get() or not  self.pass_word_input == self.pass_word_users.get():
                     return 'Invalid username or password'
             return 'Done'
