@@ -109,7 +109,6 @@ class ManageDatabase:
 class Main:
 
     def __init__(self):
-        self.users = {'admin1' : 'bookstore2024', 'Eren' : 'GodErenisRumbling'}
         self.ref  = db.reference('users')
         self.run_main()
 
@@ -123,10 +122,10 @@ class Main:
 
         users_ref = self.ref.child(user_name_input)
         users_ref.update({
-            'Birthday' : birth_day_input,
-            'Email' : email_input,
-            'Fullname' : full_name_input,
-            'Password' : pass_word_input
+            'birthday' : birth_day_input,
+            'email' : email_input,
+            'fullname' : full_name_input,
+            'password' : pass_word_input
         })
 
     def signin(self):
@@ -135,7 +134,9 @@ class Main:
         self.pass_word_input = input('Password : ')
         self.count = 1
         try:
-            self.pass_word_users = self.ref.child(f'{self.user_name_input}/Password')
+            if self.user_name_input == 'admin1' and self.pass_word_input == 'bookstore2024':
+                return 'admin'
+            self.pass_word_users = self.ref.child(f'{self.user_name_input}/password')
             while not self.user_name_input in self.ref.get() or not  self.pass_word_input == self.pass_word_users.get():
                 if self.count < 3:
                     self.count += 1
@@ -144,7 +145,7 @@ class Main:
                     self.pass_word_input = input('Password : ')
                 elif self.count >= 3:
                     return 'Banned'
-            return ('Welcome, %s' %self.user_name_input)
+            return ('Done')
         except:
             return 'Error'
 
@@ -190,9 +191,13 @@ class Main:
                 if result == 'Banned' or result == 'Error':
                     print(result)
                     break
-                else:
+                elif result == 'admin':
                     print(result)
                     self.menu()
+                    break
+                else:
+                    print(result)
+                    CustomerMenu(self)
                     break
             elif select_input == '2':
                 self.signup()
@@ -201,5 +206,70 @@ class Main:
             else:
                 print('Try again')
 
-class Cart:
-    pass
+class CustomerMenu:
+    def __init__(self, parent):
+        self.ref = db.reference('books')
+        self.total = 0
+        print('-'*20)
+        print(f'Welcome, {parent.user_name_input}')
+        self.select_menu()
+
+    def show_customer_menu(self):
+        print('-'*20)
+        print('1.Browse')
+        print('2.Buy')
+        print('3.Exit')
+
+    def select_menu(self):
+        self.show_customer_menu()
+        while True:
+            selected_input = input('Select : ')
+            if selected_input == '1':
+                print(self.browse_menu())
+                self.show_customer_menu()
+            elif selected_input == '2':
+                self.buy_menu()
+                self.show_customer_menu()
+            elif selected_input == '3':
+                break
+            else:
+                print('Select number 1-3')
+
+    def browse_menu(self):
+        print('Browse Menu')
+        category_input = input('Category : ')
+        title_input = input('Title : ')
+        try:
+            print('-'*20)
+            print('Result')
+            if category_input != '':
+                category_ref = self.ref.child(category_input)
+                if title_input != '':
+                    ISBN_ref = self.ref.child(category_input+'/'+title_input+'/ISBN')
+                    author_ref = self.ref.child(category_input+'/'+title_input+'/author')
+                    price_ref = self.ref.child(category_input+'/'+title_input+'/price')
+                    result = 'Title  : '+title_input+'\n'+'ISBN   : '+ISBN_ref.get()+'\n'+'Author : '+author_ref.get()+'\n'+'Price  : '+price_ref.get()
+                    return result
+                return category_ref.get()
+        except:
+            return 'Error'
+
+    def buy_menu(self):
+        print('Buy Menu')
+        category = input('Category : ').lower()
+        title = input('Title : ')
+        try:
+            price_ref = self.ref.child(category+'/'+title+'/price')
+            print('Price : '+price_ref.get())
+            print('-'*20)
+            print('Press c to check out')
+            user_input = input('Press : ').lower()
+            self.total = self.total + int(price_ref.get())
+            if user_input == 'c':
+                self.reciept()
+        except:
+            print('Error')
+
+    def reciept(self):
+        print('-'*20)
+        print('Total :',self.total)
