@@ -163,31 +163,31 @@ class AdminMenu(Toplevel):
 
     def create_widgets(self, parent):
         self.frame_1 = Frame(self)
-        self.set_bt = Button(self.frame_1, text = '   Set book  ')
+        self.add_bt = Button(self.frame_1, text = '   Add book  ')
         self.display_bt = Button(self.frame_1, text = 'Display data')
         self.update_bt = Button(self.frame_1, text = 'Update data')
         self.delete_bt = Button(self.frame_1, text = 'Delete data')
 
-        self.set_bt.bind('<Button-1>', lambda event: self.set_data_window(event, parent))
+        self.add_bt.bind('<Button-1>', lambda event: self.add_data_window(event, parent))
         self.display_bt.bind('<Button-1>', lambda event: self.display_data_window(event, parent))
         self.update_bt.bind('<Button-1>', lambda event :self.update_data_window(event, parent))
         self.delete_bt.bind('<Button-1>', lambda event :self.delete_data_window(event, parent)) 
     
     def place_widgets(self):
-        self.set_bt.grid(row = 0, column = 0)
+        self.add_bt.grid(row = 0, column = 0)
         self.display_bt.grid(row = 0, column = 1)
         self.update_bt.grid(row = 1, column = 0) 
         self.delete_bt.grid(row = 1, column = 1)
         self.frame_1.pack(pady = 10, anchor = 'center', expand = True)
 
-    def set_data_window(self, event, parent):
+    def add_data_window(self, event, parent):
         self.withdraw()
-        self.set_window = Toplevel(self)
-        self.set_window.title(' Set Book')
-        self.set_window.geometry(parent.center_window(300,460))
-        self.set_data_widgets()
-        self.place_set_data_widgets()
-        self.set_window.protocol('WM_DELETE_WINDOW', lambda: self.close_set_window(parent))
+        self.add_window = Toplevel(self)
+        self.add_window.title(' Add Book')
+        self.add_window.geometry(parent.center_window(300,460))
+        self.add_data_widgets()
+        self.place_add_data_widgets()
+        self.add_window.protocol('WM_DELETE_WINDOW', lambda: self.close_add_window(parent))
 
     def display_data_window(self, event, parent):
         self.withdraw()
@@ -216,26 +216,26 @@ class AdminMenu(Toplevel):
         self.place_delete_data_widgets()
         self.delete_window.protocol('WM_DELETE_WINDOW', lambda: self.close_delete_window(parent))
 
-    def set_data_widgets(self):
-        self.folder_l = Label(self.set_window, text = 'Folder')
-        self.folder_entry = Entry(self.set_window)
-        self.category_l = Label(self.set_window, text = 'Category')
-        self.category_entry = Entry(self.set_window)
-        self.title_l = Label(self.set_window, text = 'Title')
-        self.title_entry = Entry(self.set_window)
-        self.ISBN_l = Label(self.set_window, text = 'ISBN')
-        self.ISBN_entry = Entry(self.set_window)
-        self.author_l = Label(self.set_window, text = 'Author')
-        self.author_entry = Entry(self.set_window)
-        self.price_l = Label(self.set_window, text = 'Price')
-        self.price_entry = Entry(self.set_window)
+    def add_data_widgets(self):
+        self.folder_l = Label(self.add_window, text = 'Folder')
+        self.folder_entry = Entry(self.add_window)
+        self.category_l = Label(self.add_window, text = 'Category')
+        self.category_entry = Entry(self.add_window)
+        self.title_l = Label(self.add_window, text = 'Title')
+        self.title_entry = Entry(self.add_window)
+        self.ISBN_l = Label(self.add_window, text = 'ISBN')
+        self.ISBN_entry = Entry(self.add_window)
+        self.author_l = Label(self.add_window, text = 'Author')
+        self.author_entry = Entry(self.add_window)
+        self.price_l = Label(self.add_window, text = 'Price')
+        self.price_entry = Entry(self.add_window)
 
-        self.frame_2 = Frame(self.set_window)
+        self.frame_2 = Frame(self.add_window)
         self.summit_bt2 = Button(self.frame_2, text = 'Summit')
         self.back_bt2 = Button(self.frame_2, text = 'Back')
         self.msg_l2 = Label(self.frame_2, text= '')
-        self.back_bt2.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.set_window))
-        self.summit_bt2.bind('<Button-1>', self.pressed_set_book)
+        self.back_bt2.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.add_window))
+        self.summit_bt2.bind('<Button-1>', self.pressed_add_book)
    
     def display_data_widgets(self):
         self.path_display_l = Label(self.display_window, text = 'Path')
@@ -274,7 +274,7 @@ class AdminMenu(Toplevel):
         self.back_bt5.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.delete_window))
         self.summit_bt5.bind('<Button-1>', self.pressed_delete_data)
 
-    def place_set_data_widgets(self):
+    def place_add_data_widgets(self):
         self.folder_l.pack(pady = 5)
         self.folder_entry.pack(pady = 5)
         self.category_l.pack(pady = 5) 
@@ -326,8 +326,8 @@ class AdminMenu(Toplevel):
         self.destroy()
         parent.destroy()
 
-    def close_set_window(self, parent):
-        self.set_window.destroy()
+    def close_add_window(self, parent):
+        self.add_window.destroy()
         self.destroy()
         parent.destroy()
 
@@ -349,9 +349,9 @@ class AdminMenu(Toplevel):
         window.withdraw()
         self.deiconify()
 
-    def pressed_set_book(self, event):
+    def pressed_add_book(self, event):
         md = ManageDatabase()
-        result = md.set_book(self.folder_entry.get(), self.category_entry.get(), self.title_entry.get(), self.ISBN_entry.get(), self.author_entry.get(), self.price_entry.get())
+        result = md.add_book(self.folder_entry.get(), self.category_entry.get(), self.title_entry.get(), self.ISBN_entry.get(), self.author_entry.get(), self.price_entry.get())
         self.msg_l2.config(text = result)
 
     def pressed_display_data(self, event):
@@ -374,6 +374,3 @@ class CustomerMenu(Toplevel):
         super().__init__(parent)
         self.geometry(parent.center_window(350,350))
         self.mainloop()
-
-if __name__ == '__main__':
-    MainWindow()
