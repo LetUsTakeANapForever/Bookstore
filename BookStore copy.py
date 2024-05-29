@@ -46,8 +46,8 @@ class ManageDatabase:
     def get_price(self):
         return str("'"+self.price+"'")
 
-    def set_book(self):
-        print('Set Book Menu')
+    def Add_book(self):
+        print('Add Book Menu')
         folder_input = input('Enter folder name to set data:')
         child_input = input('Enter category name:  ')
         
@@ -63,7 +63,7 @@ class ManageDatabase:
         try:
             ref  = db.reference(folder_input)
             users_ref = ref.child(child_input)
-            users_ref.set({
+            users_ref.update({
                 self.get_title() : {
                     'ISBN' : self.get_ISBN(),
                     'author' : self.get_author(),
@@ -207,11 +207,14 @@ class Main:
                 print('Try again')
 
 class CustomerMenu:
-    def __init__(self, parent):
-        self.ref = db.reference('books')
+    def __init__(self, parent): # 
+        self.ref_books = db.reference('books')
+        self.ref_users = db.reference('users')
+        # self.current_user = 'Test'
+        self.current_user = parent.user_name_input
         self.total = 0
         print('-'*20)
-        print(f'Welcome, {parent.user_name_input}')
+        print(f'Welcome, {self.current_user}')
         self.select_menu()
 
     def show_customer_menu(self):
@@ -235,41 +238,75 @@ class CustomerMenu:
             else:
                 print('Select number 1-3')
 
+    def show_books(self):
+        try:
+            categories = list(self.ref_books.get())
+            for cat in categories:
+                print('-', cat)
+            self.category_input = input('Select Category : ').lower()
+            books = list(self.ref_books.child(self.category_input).get())
+            for book in books:
+                print('-', book)
+            self.title_input = input('Select Title : ')
+        except:
+            print('Error')
+
     def browse_menu(self):
         print('Browse Menu')
-        category_input = input('Category : ')
-        title_input = input('Title : ')
+        print('Category')
         try:
+            self.show_books()
             print('-'*20)
             print('Result')
-            if category_input != '':
-                category_ref = self.ref.child(category_input)
-                if title_input != '':
-                    ISBN_ref = self.ref.child(category_input+'/'+title_input+'/ISBN')
-                    author_ref = self.ref.child(category_input+'/'+title_input+'/author')
-                    price_ref = self.ref.child(category_input+'/'+title_input+'/price')
-                    result = 'Title  : '+title_input+'\n'+'ISBN   : '+ISBN_ref.get()+'\n'+'Author : '+author_ref.get()+'\n'+'Price  : '+price_ref.get()
-                    return result
-                return category_ref.get()
+            if self.category_input != '' and self.title_input != '':
+                ISBN_ref = self.ref.child(self.category_input+'/'+self.title_input+'/ISBN')
+                author_ref = self.ref.child(self.category_input+'/'+self.title_input+'/author')
+                price_ref = self.ref.child(self.category_input+'/'+self.title_input+'/price')
+                result = 'Title  : '+self.title_input+'\n'+'ISBN   : '+ISBN_ref.get()+'\n'+'Author : '+author_ref.get()+'\n'+'Price  : '+price_ref.get()
+                return result
         except:
             return 'Error'
 
     def buy_menu(self):
         print('Buy Menu')
-        category = input('Category : ').lower()
-        title = input('Title : ')
         try:
-            price_ref = self.ref.child(category+'/'+title+'/price')
+            self.show_books()
+            price_ref = self.ref_books.child(self.category_input+'/'+self.title_input+'/price')
             print('Price : '+price_ref.get())
+            self.add_to_cart(price_ref.get())
             print('-'*20)
             print('Press c to check out')
-            user_input = input('Press : ').lower()
-            self.total = self.total + int(price_ref.get())
-            if user_input == 'c':
-                self.reciept()
+            press_input = input('Press : ').lower()
+            if press_input == 'c':
+                self.show_reciept()
         except:
             print('Error')
 
-    def reciept(self):
-        print('-'*20)
-        print('Total :',self.total)
+    def show_reciept(self):
+        try:
+            orders_ref = self.ref_users.child(self.current_user+'/Cart')
+            orders = list(orders_ref.get())
+            for order in orders:
+                if not order is None:    
+                    print(order, end = ' ')
+                    price_ref = self.ref_users.child(self.current_user+'/Cart'+'/'+order)
+                    print(price_ref.get(), 'THB')
+                    self.total = self.total + float(price_ref.get())
+            print('Total %.2f' %self.total, 'THB')
+            # self.add_to_order_history()
+        except: print('Error')
+
+    def add_to_cart(self, price):
+        try:
+            cart_ref = self.ref_users.child(self.current_user+'/Cart')
+            cart_ref.update({
+                self.title_input : price
+            })
+        except: print('Error')
+
+    def add_to_order_history(self, price):
+        pass
+        # cart_ref = self.ref_users.child(self.current_user+'/Cart')
+        # cart_ref.update({
+        #     self.title_input : price
+        # })
