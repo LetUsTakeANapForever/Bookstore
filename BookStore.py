@@ -46,7 +46,7 @@ class ManageDatabase:
     def get_price(self):
         return str(self.price)
 
-    def set_book(self, folder, category, title, ISBN, author, price):
+    def add_book(self, folder, category, title, ISBN, author, price):
         self.set_title(title)
         self.set_ISBN(ISBN)
         self.set_author(author)
@@ -54,7 +54,7 @@ class ManageDatabase:
         try:
             ref  = db.reference(folder)
             users_ref = ref.child(category)
-            users_ref.set({
+            users_ref.update({
                 self.get_title() : {
                     'ISBN' : self.get_ISBN(),
                     'author' : self.get_author(),
