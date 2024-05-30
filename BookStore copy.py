@@ -161,50 +161,50 @@ class Main:
     def menu(self):
         self.show_menu()
         while True:
-            my_input = input('Select : ')
             data = ManageDatabase()
-            if my_input == '6':
-                break
-            elif my_input == '1':
-                data.set_book()
-            elif my_input == '2':
-                print(data.get_data())
-            elif my_input == '3':
-                print(data.update_data())
-            elif my_input == '4':
-                print(data.delete_data())
-            elif my_input == '5':
-                self.show_menu()
-                continue
-            else: 
-                print('Try again')
-            print('Done'+'\nPress 5 to open menu')
+            match input('Select : '):
+                case '1':
+                    data.set_book()
+                case '2':
+                    print(data.get_data())
+                case '3':
+                    print(data.update_data())
+                case '4':
+                    print(data.delete_data())
+                case '5':
+                    self.show_menu()
+                    continue
+                case '6':
+                    break
+                case other: 
+                    print('Try again')
+                    print('Done'+'\nPress 5 to open menu')
 
     def run_main(self):
         print('Welcome'.center(26, '-'))
         print('1.Sign in')
         print('2.Sign up')
         while True:
-            select_input = input('Select : ')
-            if select_input == '1':
-                result = self.signin()
-                if result == 'Banned' or result == 'Error':
-                    print(result)
+            match input('Select : '):
+                case '1':
+                    result = self.signin()
+                    if result == 'Banned' or result == 'Error':
+                        print(result)
+                        break
+                    elif result == 'admin':
+                        print(result)
+                        self.menu()
+                        break
+                    else:
+                        print(result)
+                        CustomerMenu(self)
+                        break
+                case '2':
+                    self.signup()
+                    self.run_main()
                     break
-                elif result == 'admin':
-                    print(result)
-                    self.menu()
-                    break
-                else:
-                    print(result)
-                    CustomerMenu(self)
-                    break
-            elif select_input == '2':
-                self.signup()
-                self.run_main()
-                break
-            else:
-                print('Try again')
+                case other:
+                    print('Try again')
 
 class CustomerMenu:
     def __init__(self, parent): # 
@@ -212,31 +212,43 @@ class CustomerMenu:
         self.ref_users = db.reference('users')
         # self.current_user = 'Test'
         self.current_user = parent.user_name_input
-        self.total = 0
+        self.cart_ref = self.ref_users.child(self.current_user+'/cart')
+        self.history_ref = self.ref_users.child(self.current_user+'/order_history')
         print('-'*20)
         print(f'Welcome, {self.current_user}')
+        self.total = 0
         self.select_menu()
+
+    def set_total(self, price, qty):
+        self.total = self.total + float(price)*qty
+    
+    def get_total(self):
+        return self.total
 
     def show_customer_menu(self):
         print('-'*20)
         print('1.Browse')
         print('2.Buy')
-        print('3.Exit')
+        print('3.Order History')
+        print('4.Exit')
 
     def select_menu(self):
         self.show_customer_menu()
         while True:
-            selected_input = input('Select : ')
-            if selected_input == '1':
-                print(self.browse_menu())
-                self.show_customer_menu()
-            elif selected_input == '2':
-                self.buy_menu()
-                self.show_customer_menu()
-            elif selected_input == '3':
-                break
-            else:
-                print('Select number 1-3')
+            match input('Select : '):
+                case '1':
+                    self.browse_menu()
+                    self.show_customer_menu()
+                case '2':
+                    self.buy_menu()
+                    self.show_customer_menu()
+                case '3':
+                    self.show_order_history()
+                    self.show_customer_menu()
+                case '4':
+                    break
+                case other:
+                    print('Select number 1-4')
 
     def show_books(self):
         try:
@@ -263,9 +275,9 @@ class CustomerMenu:
                 author_ref = self.ref.child(self.category_input+'/'+self.title_input+'/author')
                 price_ref = self.ref.child(self.category_input+'/'+self.title_input+'/price')
                 result = 'Title  : '+self.title_input+'\n'+'ISBN   : '+ISBN_ref.get()+'\n'+'Author : '+author_ref.get()+'\n'+'Price  : '+price_ref.get()
-                return result
+                print(result) 
         except:
-            return 'Error'
+            print('Error') 
 
     def buy_menu(self):
         print('Buy Menu')
@@ -273,7 +285,7 @@ class CustomerMenu:
             self.show_books()
             price_ref = self.ref_books.child(self.category_input+'/'+self.title_input+'/price')
             print('Price : '+price_ref.get())
-            self.add_to_cart(price_ref.get())
+            self.add_to_cart(self.title_input, price_ref.get())
             print('-'*20)
             print('Press c to check out')
             press_input = input('Press : ').lower()
@@ -284,29 +296,59 @@ class CustomerMenu:
 
     def show_reciept(self):
         try:
-            orders_ref = self.ref_users.child(self.current_user+'/Cart')
-            orders = list(orders_ref.get())
-            for order in orders:
+            in_cart = list(self.cart_ref.get())
+            for order in in_cart:
                 if not order is None:    
-                    print(order, end = ' ')
-                    price_ref = self.ref_users.child(self.current_user+'/Cart'+'/'+order)
-                    print(price_ref.get(), 'THB')
-                    self.total = self.total + float(price_ref.get())
-            print('Total %.2f' %self.total, 'THB')
-            # self.add_to_order_history()
+                    price_ref = self.ref_users.child(self.current_user+'/cart/'+order+'/price')
+                    qty_ref = self.ref_users.child(self.current_user+'/cart/'+order+'/quantity')
+                    print(f'{order} {price_ref.get()} THB (qty:{qty_ref.get()})')
+                    self.add_to_order_history(order, price_ref.get())
+                    self.set_total(price_ref.get(), qty_ref.get())
+            self.cart_ref.delete()
+            print('-'*20)
+            print('Total %.2f' %self.get_total(), 'THB')
         except: print('Error')
 
-    def add_to_cart(self, price):
+    def add_to_cart(self, title, price):
         try:
-            cart_ref = self.ref_users.child(self.current_user+'/Cart')
-            cart_ref.update({
-                self.title_input : price
+            qty = 1
+            if not self.cart_ref.get() is None:
+                if title in list(self.cart_ref.get()):
+                    qty_ref = self.ref_users.child(self.current_user+'/cart/'+title+'/quantity')
+                    qty = qty_ref.get() + 1
+            self.cart_ref.update({
+                title : {
+                    'price' : price,
+                    'quantity' : qty
+                }      
             })
         except: print('Error')
 
-    def add_to_order_history(self, price):
-        pass
-        # cart_ref = self.ref_users.child(self.current_user+'/Cart')
-        # cart_ref.update({
-        #     self.title_input : price
-        # })
+    def add_to_order_history(self, title, price):
+        try:
+            cart_qty_ref = self.ref_users.child(self.current_user+'/cart/'+title+'/quantity')
+            qty = cart_qty_ref.get()
+            if not self.history_ref.get() is None:
+                if title in list(self.history_ref.get()):
+                    qty_ref = self.ref_users.child(self.current_user+'/order_history/'+title+'/quantity')
+                    qty = qty_ref.get() + cart_qty_ref.get()        
+            self.history_ref.update({
+                title : {
+                    'price' : price,
+                    'quantity' : qty
+                }  
+            })
+        except: print('Error')
+
+    def show_order_history(self):
+        print('Order History'.center(19, '-'))
+        try:
+            if self.history_ref.get() is None:
+                print('Not exist')
+            else: # not self.history_ref.get() is None
+                orders_hist = list(self.history_ref.get())
+                for order in orders_hist:
+                    price_ref = self.ref_users.child(f'{self.current_user}/order_history/{order}/price')
+                    qty_ref = self.ref_users.child(f'{self.current_user}/order_history/{order}/quantity')
+                    print(f'- {order} {price_ref.get()} THB (qty:{qty_ref.get()})')
+        except: print('Error')
