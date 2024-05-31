@@ -210,7 +210,7 @@ class AdminMenu(Toplevel):
     def delete_data_window(self, event, parent):
         self.withdraw()
         self.delete_window = Toplevel(self)
-        self.delete_window.title(' Update Data')
+        self.delete_window.title(' Delete Data')
         self.delete_window.geometry(parent.center_window(300,160))
         self.delete_data_widgets()
         self.place_delete_data_widgets()
@@ -373,4 +373,9 @@ class CustomerMenu(Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.geometry(parent.center_window(350,350))
+        self.protocol('WM_DELETE_WINDOW', lambda: self.on_close(parent))
         self.mainloop()
+
+    def on_close(self, parent):
+        self.destroy()
+        parent.destroy()
