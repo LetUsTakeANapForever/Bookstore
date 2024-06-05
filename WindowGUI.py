@@ -158,7 +158,7 @@ class AdminMenu(Toplevel):
         super().__init__(parent)
         self.title('Welcome, admin1')
         self.geometry(parent.center_window(190,130))
-        self.protocol('WM_DELETE_WINDOW', lambda: self.close_admin_menu(parent))
+        self.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self, parent))
         self.create_widgets(parent)
         self.place_widgets()
         self.mainloop()
@@ -189,7 +189,7 @@ class AdminMenu(Toplevel):
         self.add_window.geometry(parent.center_window(300,460))
         self.add_data_widgets()
         self.place_add_data_widgets()
-        self.add_window.protocol('WM_DELETE_WINDOW', lambda: self.close_add_window(parent))
+        self.add_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.add_window, parent))
 
     def display_data_window(self, event, parent):
         self.withdraw()
@@ -198,7 +198,7 @@ class AdminMenu(Toplevel):
         self.display_window.geometry(parent.center_window(300,200))
         self.display_data_widgets()
         self.place_display_data_widgets()
-        self.display_window.protocol('WM_DELETE_WINDOW', lambda: self.close_display_window(parent))
+        self.display_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.display_window, parent))
 
     def update_data_window(self, event, parent):
         self.withdraw()
@@ -207,7 +207,7 @@ class AdminMenu(Toplevel):
         self.update_window.geometry(parent.center_window(300,330))
         self.update_data_widgets()
         self.place_update_data_widgets()
-        self.update_window.protocol('WM_DELETE_WINDOW', lambda: self.close_update_window(parent))
+        self.update_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.update_window, parent))
 
     def delete_data_window(self, event, parent):
         self.withdraw()
@@ -216,7 +216,7 @@ class AdminMenu(Toplevel):
         self.delete_window.geometry(parent.center_window(300,160))
         self.delete_data_widgets()
         self.place_delete_data_widgets()
-        self.delete_window.protocol('WM_DELETE_WINDOW', lambda: self.close_delete_window(parent))
+        self.delete_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.delete_window, parent))
 
     def add_data_widgets(self):
         self.folder_l = Label(self.add_window, text = 'Folder')
@@ -323,28 +323,8 @@ class AdminMenu(Toplevel):
         self.back_bt5.grid(row = 0, column = 1)
         self.msg_l5.grid(row = 1, columnspan = 2, pady = 5)
 
-    def close_display_window(self, parent):
-        self.display_window.destroy()
-        self.destroy()
-        parent.destroy()
-
-    def close_add_window(self, parent):
-        self.add_window.destroy()
-        self.destroy()
-        parent.destroy()
-
-    def close_update_window(self, parent):
-        self.update_window.destroy()
-        self.destroy()
-        parent.destroy()
-
-    def close_delete_window(self, parent):
-        self.delete_window.destroy()
-        self.destroy()
-        parent.destroy()
-
-    def close_admin_menu(self, parent):
-        self.destroy()
+    def on_close(self, window, parent):
+        window.destroy()
         parent.destroy()
 
     def pressed_back_bt(self, event, window):
@@ -376,11 +356,14 @@ class CustomerMenu(Toplevel):
         super().__init__(parent)
         self.title(' Customer Menu')
         self.geometry(parent.center_window(350,220))
-        self.protocol('WM_DELETE_WINDOW', lambda: self.on_close(parent))
+        self.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self, parent))
+        self.main_widgets(parent)
+        self.mainloop()
+
+    def main_widgets(self, parent):
         self.get_image()
         self.create_widgets(parent)
         self.place_widgets()
-        self.mainloop()
 
     def create_widgets(self, parent):
         self.frame1 = Frame(self)
@@ -396,44 +379,13 @@ class CustomerMenu(Toplevel):
         self.buy_bt.bind('<Button-1>', lambda event: self.create_buy_menu_window(event, parent))
         self.order_hist_bt.bind('<Button-1>', lambda event: self.create_order_hist_window(event, parent))
 
-    def place_widgets(self):
-        self.frame1.pack(anchor = 'center')
-        self.welcome_l.grid(row = 0, column = 0, pady = 10)
-        self.browse_bt.grid(row = 1, column = 0, pady = 10) 
-        self.buy_bt.grid(row = 1, column = 1, pady = 10)
-        self.order_hist_bt.grid(row = 1, column = 2, pady = 10)
-        self.browse_l.grid(row = 2, column = 0)
-        self.buy_l.grid(row = 2, column = 1)
-        self.order_hist_l.grid(row = 2, column = 2)
-
-    def get_image(self):
-        browse_img = Image.open('magnifying_glass.jpg')
-        resized_browse_img = browse_img.resize((100,100))
-        self.ready_browse_img = ImageTk.PhotoImage(resized_browse_img)
-        buy_img = Image.open('cart_original.jpg')
-        resized_buy_img = buy_img.resize((100,100))
-        self.ready_buy_img = ImageTk.PhotoImage(resized_buy_img)
-        order_hist_img = Image.open('cart.jpg')
-        resized_order_hist_img = order_hist_img.resize((100,100))
-        self.ready_order_hist_img = ImageTk.PhotoImage(resized_order_hist_img)
-
     def create_browse_menu_window(self, event, parent):
         self.browse_window = Toplevel()
         self.browse_window.title('Browse Menu')
         self.browse_window.geometry(parent.center_window(250,160))
-        self.browse_window.protocol('WM_DELETE_WINDOW', lambda: self.close_browse_window(parent))
+        self.browse_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.browse_window, parent))
         self.create_browse_menu_widgets(parent)
         self.place_browse_menu_widgets()
-    
-    def create_browse_menu_widgets(self, parent):
-        self.withdraw()
-        self.category_title_widgets(parent, self.browse_window)
-        self.frame2 = Frame(self.browse_window)
-        self.ok_bt = Button(self.frame2, text = 'OK')
-        self.back_bt = Button(self.frame2, text = 'Back')
-
-        self.ok_bt.bind('<Button-1>', lambda event : self.create_browsed_result_window(event, parent))
-        self.back_bt.bind('<Button-1>', lambda event: self.pressed_back(event, self.browse_window))
 
     def create_browsed_result_window(self, event, parent):
         self.browsed_result_window = Toplevel()
@@ -454,9 +406,44 @@ class CustomerMenu(Toplevel):
         self.buy_window = Toplevel()
         self.buy_window.title('Browse Menu')
         self.buy_window.geometry(parent.center_window(250,200))
-        self.buy_window.protocol('WM_DELETE_WINDOW', lambda: self.close_buy_window(parent))
+        self.buy_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.buy_window, parent))
         self.create_buy_menu_widgets(parent)
         self.place_buy_menu_widgets()
+
+    def create_check_out_window(self, event, parent):
+        self.buy_window.withdraw()
+        self.check_out_window = Toplevel()
+        self.check_out_window.title('Cart')
+        self.check_out_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.check_out_window, parent))
+        self.create_check_out_widgets(parent)
+        self.place_check_out_window_widgets()
+
+    def create_order_hist_window(self, event, parent):
+        self.withdraw()
+        self.order_hist_window = Toplevel()
+        self.order_hist_window.title('Order History')
+        self.create_order_hist_widgets(parent)
+        self.place_order_hist_widgets()
+        self.order_hist_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.order_hist_window, parent))
+    
+    def create_browse_menu_widgets(self, parent):
+        self.withdraw()
+        self.category_title_widgets(parent, self.browse_window)
+        self.frame2 = Frame(self.browse_window)
+        self.ok_bt = Button(self.frame2, text = 'OK')
+        self.back_bt = Button(self.frame2, text = 'Back')
+
+        self.ok_bt.bind('<Button-1>', lambda event : self.create_browsed_result_window(event, parent))
+        self.back_bt.bind('<Button-1>', lambda event: self.pressed_back(event, self.browse_window))
+
+    def category_title_widgets(self, parent, window):
+        mc = ManageCustomer(parent.user_name_entry.get())
+        self.category_var = StringVar()
+        self.category_list = mc.get_category()
+        self.category_var.set('Select Category')
+        self.category_option = OptionMenu(window, self.category_var, *self.category_list)
+        self.title_l = Label(window, text = 'Title')
+        self.title_entry = Entry(window)
     
     def create_buy_menu_widgets(self, parent):
         self.withdraw()
@@ -472,21 +459,6 @@ class CustomerMenu(Toplevel):
         self.back_bt2.bind('<Button-1>',lambda     event: self.pressed_back(event, self.   buy_window))
         self.clear_cart_bt.bind('<Button-1>',lambda event: self.clear_card_process(event, parent))
 
-    def add_status(self, event, parent):
-        mc = ManageCustomer(parent.user_name_entry.get())
-        try:
-            result = mc.buy_menu(self.category_var.get(), self.title_entry.get())
-            messagebox.showinfo('Cart status', message = result)
-        except: messagebox.showerror('Cart status', 'Error')
-
-    def create_check_out_window(self, event, parent):
-        self.buy_window.withdraw()
-        self.check_out_window = Toplevel()
-        self.check_out_window.title('Cart')
-        self.check_out_window.protocol('WM_DELETE_WINDOW', lambda: self.close_check_out_window(parent))
-        self.create_check_out_widgets(parent)
-        self.place_check_out_window_widgets()
-        
     def create_check_out_widgets(self, parent):
         mc = ManageCustomer(parent.user_name_entry.get())
         if mc.show_cart() is None:
@@ -505,27 +477,6 @@ class CustomerMenu(Toplevel):
         self.back_bt3.bind('<Button-1>', self. back_to_buy_menu)
         self.check_out_bt.bind('<Button-1>',lambda    event: self.pressed_check_out2(event, parent))
         
-    def pressed_check_out2(self, event, parent):            
-        try:
-            mc = ManageCustomer(parent.user_name_entry.get())
-            total = mc.show_total()
-            self.total_l.config(text = f'Total {total} THB', background = '#6B8A7A')
-        except:
-            self.total_l.config(text = 'Error')
-
-    def clear_card_process(self, event,  parent):
-        m = ManageDatabase()        
-        m.delete_data(f'users/{parent.user_name_entry.get()}/cart')
-        messagebox.showinfo('Cart status', 'Done')
-
-    def create_order_hist_window(self, event, parent):
-        self.withdraw()
-        self.order_hist_window = Toplevel()
-        self.order_hist_window.title('Order History')
-        self.create_order_hist_widgets(parent)
-        self.place_order_hist_widgets()
-        self.order_hist_window.protocol('WM_DELETE_WINDOW', lambda: self.close_order_hist_window(parent))
-
     def create_order_hist_widgets(self, parent):
         mc = ManageCustomer(parent.user_name_entry.get())
         order_hist_list = [hist[0] for hist in mc.show_order_history()]
@@ -567,39 +518,55 @@ class CustomerMenu(Toplevel):
         self.back_bt3.grid(row = 0, column = 0, padx = 10)
         self.check_out_bt.grid(row = 0, column = 1)
 
-    def close_browse_window(self, parent):
-        self.browse_window.destroy()
-        parent.destroy()
-
-    def close_buy_window(self, parent):
-        self.buy_window.destroy()
-        parent.destroy()
-
     def pressed_back(self, event, window):
         window.withdraw()
         self.deiconify()
 
+    def place_widgets(self):
+        self.frame1.pack(anchor = 'center')
+        self.welcome_l.grid(row = 0, column = 0, pady = 10)
+        self.browse_bt.grid(row = 1, column = 0, pady = 10) 
+        self.buy_bt.grid(row = 1, column = 1, pady = 10)
+        self.order_hist_bt.grid(row = 1, column = 2, pady = 10)
+        self.browse_l.grid(row = 2, column = 0)
+        self.buy_l.grid(row = 2, column = 1)
+        self.order_hist_l.grid(row = 2, column = 2)
+
+    def pressed_check_out2(self, event, parent):            
+        try:
+            mc = ManageCustomer(parent.user_name_entry.get())
+            total = mc.show_total()
+            self.total_l.config(text = f'Total {total} THB', background = '#6B8A7A')
+        except:
+            self.total_l.config(text = 'Error')
+
+    def get_image(self):
+        browse_img = Image.open('magnifying_glass.jpg')
+        resized_browse_img = browse_img.resize((100,100))
+        self.ready_browse_img = ImageTk.PhotoImage(resized_browse_img)
+        buy_img = Image.open('cart_original.jpg')
+        resized_buy_img = buy_img.resize((100,100))
+        self.ready_buy_img = ImageTk.PhotoImage(resized_buy_img)
+        order_hist_img = Image.open('cart.jpg')
+        resized_order_hist_img = order_hist_img.resize((100,100))
+        self.ready_order_hist_img = ImageTk.PhotoImage(resized_order_hist_img)
+  
+    def add_status(self, event, parent):
+        mc = ManageCustomer(parent.user_name_entry.get())
+        try:
+            result = mc.buy_menu(self.category_var.get(), self.title_entry.get())
+            messagebox.showinfo('Cart status', message = result)
+        except: messagebox.showerror('Cart status', 'Error')
+    
     def back_to_buy_menu(self, event):
         self.check_out_window.withdraw()
         self.deiconify()
 
-    def close_check_out_window(self, parent):
-        self.check_out_window.destroy()
-        parent.destroy()
+    def clear_card_process(self, event,  parent):
+        m = ManageDatabase()        
+        m.delete_data(f'users/{parent.user_name_entry.get()}/cart')
+        messagebox.showinfo('Cart status', 'Done')
 
-    def close_order_hist_window(self, parent):
-        self.order_hist_window.destroy()
+    def on_close(self, window, parent):
+        window.destroy()
         parent.destroy()
-
-    def on_close(self, parent):
-        self.destroy()
-        parent.destroy()
-
-    def category_title_widgets(self, parent, window):
-        mc = ManageCustomer(parent.user_name_entry.get())
-        self.category_var = StringVar()
-        self.category_list = mc.get_category()
-        self.category_var.set('Select Category')
-        self.category_option = OptionMenu(window, self.category_var, *self.category_list)
-        self.title_l = Label(window, text = 'Title')
-        self.title_entry = Entry(window)
