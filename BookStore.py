@@ -51,6 +51,8 @@ class ManageDatabase:
         self.set_ISBN(ISBN)
         self.set_author(author)
         self.set_price(price)
+        folder = str(folder).lower()
+        category = str(category).lower()
         try:
             ref  = db.reference(folder)
             users_ref = ref.child(category)
@@ -197,7 +199,7 @@ class ManageCustomer:
                     item = [(f'{order} {price_ref.get()} THB (qty:{qty_ref.get()})')]
                     cart_list.append(item)
             return cart_list
-        except: print('Error')
+        except: print('Empty')
 
     def add_to_cart(self, title, price):
         try:
