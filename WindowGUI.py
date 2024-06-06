@@ -246,9 +246,24 @@ class AdminMenu(Toplevel):
         self.frame_3 = Frame(self.display_window)
         self.summit_bt3 = Button(self.frame_3, text = 'Summit')
         self.back_bt3 = Button(self.frame_3, text = 'Back')
-        self.msg_l3 = Label(self.frame_3, text = '')
         self.back_bt3.bind('<Button-1>', lambda event :self.pressed_back_bt(event, self.display_window))
         self.summit_bt3.bind('<Button-1>', self.pressed_display_data)
+
+    def display_result_window(self):
+        self.result_window = Toplevel()
+        self.result_window.title(' Result')
+        self.display_result_widgets()
+
+    def display_result_widgets(self):
+        try:
+            md = ManageDatabase()
+            result = list(md.get_data(self. path_display_entry.get()))
+            result = '\n'.join(result)
+        except: result = ['Error']
+        self.result_text = scrolledtext.ScrolledText(self.result_window, wrap = WORD, width = 40, height = 10)
+        self.result_text.insert(END, result)
+        self.result_text.config(state = DISABLED)
+        self.result_text.pack()
     
     def update_data_widgets(self):
         self.path_l = Label(self.update_window, text = 'Path')
@@ -301,7 +316,6 @@ class AdminMenu(Toplevel):
         self.frame_3.pack(pady = 15)
         self.summit_bt3.grid(row = 0, column = 0, padx =10)
         self.back_bt3.grid(row = 0, column = 1)
-        self.msg_l3.grid(row = 1, columnspan = 2, pady = 5)
 
     def place_update_data_widgets(self):
         self.path_l.pack(pady = 10)
@@ -337,9 +351,7 @@ class AdminMenu(Toplevel):
         self.msg_l2.config(text = result)
 
     def pressed_display_data(self, event):
-        md = ManageDatabase()
-        result = md.get_data(self.path_display_entry.get())
-        self.msg_l3.config(text = result)
+        self.display_result_window()
 
     def pressed_update_data(self, event):
         md = ManageDatabase()
