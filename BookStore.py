@@ -66,14 +66,70 @@ class ManageDatabase:
             return 'Done'
         except:
             return('Error')
-
+    
     def get_data(self, path):
+        data_list = []
         try:
-            ref  = db.reference(path)
-            return ('Data',ref.get())
-        # return csv file
+            ref = db.reference(path)
+            if path[:5] == 'books':
+                categories = list(ref.get())
+                # path : books 
+                if len(path) == 5:
+                    for category in categories:
+                        capitalized_category = str(category).capitalize()
+                        cat = f'\n({capitalized_category})\n'
+                        data_list.append(cat)
+                        title_ref = ref.child(category)
+                        titles = list(title_ref.get())
+                        for title in titles:
+                            ISBN_ref = ref.child(f'{category}/{title}/ISBN')
+                            author_ref = ref.child(f'{category}/{title}/author')
+                            price_ref = ref.child(f'{category}/{title}/price')
+                            data = f'Title : {title}\nISBN : {ISBN_ref.get()}\nAuthor : {author_ref.get()}\nPrice : {price_ref.get()}\n'
+                            data_list.append(data)
+                # path : books/category
+                elif str(path).count('/') == 1:
+                    titles = list((ref.get()))
+                    for title in titles:
+                        ISBN_ref = ref.child(f'{title}/ISBN')
+                        author_ref = ref.child(f'{title}/author')
+                        price_ref = ref.child(f'{title}/price')
+                        data = f'Title : {title}\nISBN : {ISBN_ref.get()}\nAuthor : {author_ref.get()}\nPrice : {price_ref.get()}\n'
+                        data_list.append(data)
+                # path : books/category/title
+                elif str(path).count('/') == 2:
+                    title = (self.extract_last(path))
+                    ISBN_ref = ref.child('ISBN')
+                    author_ref = ref.child('author')
+                    price_ref = ref.child('price')
+                    data = f'Title : {title}\nISBN : {ISBN_ref.get()}\nAuthor : {author_ref.get()}\nPrice : {price_ref.get()}\n'
+                    data_list.append(data)    
+            elif path[:5] == 'users':
+                if len(path) == 5:
+                    user_list = list(ref.get())
+                    for user in user_list:
+                        birth_day_ref = ref.child(f'{user}/birthday')
+                        email_ref = ref.child(f'{user}/email')
+                        full_name_ref = ref.child(f'{user}/fullname')
+                        pass_word_ref = ref.child(f'{user}/password')
+                        data = f'{user}\nBirthday : {birth_day_ref.get()}\nEmail : {email_ref.get()}\nFullname : {full_name_ref.get()}\nPassword : {pass_word_ref.get()}\n\n'
+                        data_list.append(data)
+                elif str(path).count('/') == 1:
+                        user_name = self.extract_last(path)
+                        birth_day_ref = ref.child('birthday')
+                        email_ref = ref.child('email')
+                        full_name_ref = ref.child('fullname')
+                        pass_word_ref = ref.child('password')
+                        data = f'{user_name}\nBirthday : {birth_day_ref.get()}\nEmail : {email_ref.get()}\nFullname : {email_ref.get()}\nPassword : {pass_word_ref.get()}'
+                        data_list.append(data)
+            return data_list
         except:
             return 'Error'
+        
+    def extract_last(self, path):
+        parts = str(path).split('/')
+        parts_len = len(parts)
+        return parts[parts_len-1]
 
     def update_data(self, path, key, change):
         try:
