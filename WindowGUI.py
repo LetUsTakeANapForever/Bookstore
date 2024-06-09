@@ -416,7 +416,7 @@ class CustomerMenu(Toplevel):
 
     def create_buy_menu_window(self, event, parent):
         self.buy_window = Toplevel()
-        self.buy_window.title('Browse Menu')
+        self.buy_window.title('Buy Menu')
         self.buy_window.geometry(parent.center_window(250,200))
         self.buy_window.protocol('WM_DELETE_WINDOW', lambda: self.on_close(self.buy_window, parent))
         self.create_buy_menu_widgets(parent)
